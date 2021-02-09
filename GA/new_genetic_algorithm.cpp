@@ -216,7 +216,6 @@ double triangle_area (Point first, Point second, Point third) {
 double f_triangle_area (Individe temp, int size_of_point) {
     std::vector <Point> points = transform (temp, 0., 1., size_of_point);
     double min_s = 1.;
-    double max_s = 0.;
     double s = 0;
     for (int i = 0; i < points.size(); i++) {
         for (int j = 0; j < points.size(); j++) {
@@ -226,14 +225,11 @@ double f_triangle_area (Individe temp, int size_of_point) {
                     if (s < min_s) {
                         min_s = s;
                     }
-                    if (s > max_s) {
-                        max_s = s;
-                    }
                 }
             }
-        }d
+        }
     }
-    return max_s - min_s;
+    return min_s;
 }
 
 
