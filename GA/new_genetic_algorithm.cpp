@@ -173,64 +173,66 @@ struct Point {
     }
 };
 
-int binary_to_decimal (std::string gens) {
-    return std::stoi (gens, 0, 2);
-}
-
-double make_float (int point, double a, double b, int n) { // n - size of one point
-    double h = (b - a) / (n * n - 1.);
-    double result = a + point * h;
-    return result;
-}
-
-std::vector <Point> transform (Individe temp, double a, double b, int size_of_point) {
-    std::vector <Point> result;
-    for (int i = 0; i < temp.individual.size(); i += size_of_point) {
-        int x1, y1;
-        std::string s = temp.gens.substr (i, size_of_point);
-        std::string sx = s.substr (0, size_of_point / 2);
-        std::string sy = s.substr (size_of_point / 2, size_of_point);
-        x1 = binary_to_decimal (sx);
-        y1 = binary_to_decimal (sy);
-        double x = make_float (x1, a, b, size_of_point);
-        double y = make_float (y1, a, b, size_of_point);
-        Point t (x, y);
-        result.push_back (t);
+class Heilbronn_Problem: public Genetic_Algorithm {
+    int binary_to_decimal (std::string gens) {
+        return std::stoi (gens, 0, 2);
     }
-    return result;
-}
 
-double triangle_area (Point first, Point second, Point third) {
-    double AB, BC, AC, ab, bc, ac, p, S;
-    AB = ((first.x - second.x) * (first.x - second.x) + (first.y - second.y) * (first.y - second.y));
-    ab = sqrt(AB);
-    BC = ((second.x - third.x) * (second.x - third.x) + (second.y - third.y) * (second.y - third.y));
-    bc = sqrt(BC);
-    AC = ((first.x - third.x) * (first.x - third.x) + (first.y - third.y) * (first.y - third.y));
-    ac = sqrt(AC);
-    p = (ab + ac + bc) / 2;
-    S = sqrt((p - ab) * (p - ac) * (p - bc) * p);
-    return S;
-}
+    double make_float (int point, double a, double b, int n) { // n - size of one point
+        double h = (b - a) / (n * n - 1.);
+        double result = a + point * h;
+        return result;
+    }
 
-double f_triangle_area (Individe temp, int size_of_point) {
-    std::vector <Point> points = transform (temp, 0., 1., size_of_point);
-    double min_s = 1.;
-    double s = 0;
-    for (int i = 0; i < points.size(); i++) {
-        for (int j = 0; j < points.size(); j++) {
-            for (int z = 0; z < points.size(); z++) {
-                if (i != j || i != z || j != z) {
-                    s = triangle_area(points[i], points[j], points[z]);
-                    if (s < min_s) {
-                        min_s = s;
+    std::vector <Point> transform (Individe temp, double a, double b, int size_of_point) {
+        std::vector <Point> result;
+        for (int i = 0; i < temp.individual.size(); i += size_of_point) {
+            int x1, y1;
+            std::string s = temp.gens.substr (i, size_of_point);
+            std::string sx = s.substr (0, size_of_point / 2);
+            std::string sy = s.substr (size_of_point / 2, size_of_point);
+            x1 = binary_to_decimal (sx);
+            y1 = binary_to_decimal (sy);
+            double x = make_float (x1, a, b, size_of_point);
+            double y = make_float (y1, a, b, size_of_point);
+            Point t (x, y);
+            result.push_back (t);
+        }
+        return result;
+    }
+
+    double triangle_area (Point first, Point second, Point third) {
+        double AB, BC, AC, ab, bc, ac, p, S;
+        AB = ((first.x - second.x) * (first.x - second.x) + (first.y - second.y) * (first.y - second.y));
+        ab = sqrt(AB);
+        BC = ((second.x - third.x) * (second.x - third.x) + (second.y - third.y) * (second.y - third.y));
+        bc = sqrt(BC);
+        AC = ((first.x - third.x) * (first.x - third.x) + (first.y - third.y) * (first.y - third.y));
+        ac = sqrt(AC);
+        p = (ab + ac + bc) / 2;
+        S = sqrt((p - ab) * (p - ac) * (p - bc) * p);
+        return S;
+    }
+
+    double f_triangle_area (Individe temp, int size_of_point) {
+        std::vector <Point> points = transform (temp, 0., 1., size_of_point);
+        double min_s = 1.;
+        double s = 0;
+        for (int i = 0; i < points.size(); i++) {
+            for (int j = 0; j < points.size(); j++) {
+                for (int z = 0; z < points.size(); z++) {
+                    if (i != j || i != z || j != z) {
+                        s = triangle_area(points[i], points[j], points[z]);
+                        if (s < min_s) {
+                            min_s = s;
+                        }
                     }
                 }
             }
         }
+        return min_s;
     }
-    return min_s;
-}
+};
 
 
 
