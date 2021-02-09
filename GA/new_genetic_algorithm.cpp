@@ -8,19 +8,7 @@
 class Individe {
     public:
         std::vector <bool> individual;
-        int quality;
         std::string gens;
-
-        int check_quality () {
-            int temp_quality = 0;
-            for (size_t i = 0; i < individual.size(); i++) {
-                if (individual[i]) {
-                    temp_quality++;
-                }
-            }
-            quality = temp_quality;
-            return quality;
-        }
 
         std::string check_gens () {
             std::string temp_gens = "";
@@ -44,7 +32,6 @@ class Individe {
                 }
             }
             gens = check_gens ();
-            quality = check_quality ();
         }
 
         Individe () {
@@ -57,7 +44,6 @@ class Individe {
                 }
             }
             gens = check_gens ();
-            quality = check_quality ();
         }
 
         void mutation_strong () {
@@ -79,22 +65,12 @@ class Individe {
 class Genetic_Algorithm {
     public:
         std::vector <Individe> population;
-        int fitness;
         int population_size;
         int individe_size;
-        int individe_quality;
 
+        int check_quality () = 0;
 
-        int check_fitness () {
-            int temp_fitness = 0;
-            for (int i = 0; i < population_size; i++) {
-                if (population[i].quality >= individe_quality) {
-                    temp_fitness++;
-                }
-            }
-            fitness = temp_fitness;
-            return fitness;
-        }
+        int check_fitness () = 0;
 
         Genetic_Algorithm (int quantity_of_population, int size_of_individual, int min_quality) {
             for (int i = 0; i < quantity_of_population; i++) {
@@ -102,8 +78,8 @@ class Genetic_Algorithm {
             }
             population_size = quantity_of_population;
             individe_size = size_of_individual ;
-            individe_quality = min_quality;
-            fitness = check_fitness ();
+            //individe_min_quality = min_quality;
+            //fitness = check_fitness ();
         }
 
         int rand_divisor () {
@@ -111,7 +87,7 @@ class Genetic_Algorithm {
             return divisor;
         }
 
-        Individe selection_tournament () {
+        Individe selection_tournament () { //TODO (quality)
             int x = rand() % population_size;
             int y = rand() % population_size;
             if (population[x].quality >= population[y].quality) {
@@ -143,10 +119,10 @@ class Genetic_Algorithm {
                 temp_population.push_back (temp_individe);
             }
             population = temp_population;
-            fitness = check_fitness ();
+            fitness = check_fitness (); //TODO 
         }
 
-        void show_generation () {
+        void show_generation () { //TODO
             std::cout << "\n\n" << "Generation:" << " quantity of population = " << population_size
                     << " size of individe = " << population_size << "\n\n";
             for (int i = 0; i < population_size; i++) {
@@ -163,6 +139,36 @@ class Genetic_Algorithm {
         }
 };
 
+class Ideal_Binary_Line: public Genetic_Algorithm {
+    public:
+        int fitness;
+        int individe_quality;
+        int individe_min_quality;
+
+        int check_quality () {
+            int temp_quality = 0;
+            for (size_t i = 0; i < individual.size(); i++) {
+                if (individual[i]) {
+                    temp_quality++;
+                }
+            }
+            quality = temp_quality;
+            return quality;
+        }
+
+        int check_fitness () {
+            int temp_fitness = 0;
+            for (int i = 0; i < population_size; i++) {
+                if (population[i].quality >= individe_min_quality) {
+                    temp_fitness++;
+                }
+            }
+            fitness = temp_fitness;
+            return fitness;
+         }
+
+};
+
 struct Point {
     double x;
     double y;
@@ -174,6 +180,9 @@ struct Point {
 };
 
 class Heilbronn_Problem: public Genetic_Algorithm {
+
+    //code
+
     int binary_to_decimal (std::string gens) {
         return std::stoi (gens, 0, 2);
     }
@@ -232,6 +241,7 @@ class Heilbronn_Problem: public Genetic_Algorithm {
         }
         return min_s;
     }
+
 };
 
 
