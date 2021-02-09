@@ -38,13 +38,13 @@ class Individe {
         Individe (int size_of_individual) {
             for (size_t i = 0; i < size_of_individual; i++) {
                 if (rand() % 2) {
-                    individual.push_back(true);
+                    individual.push_back (true);
                 } else {
-                    individual.push_back(false);
+                    individual.push_back (false);
                 }
             }
-            gens = check_gens();
-            quality = check_quality();
+            gens = check_gens ();
+            quality = check_quality ();
         }
 
         Individe () {
@@ -56,8 +56,8 @@ class Individe {
                     individual[i] = !individual[i];
                 }
             }
-            gens = check_gens();
-            quality = check_quality();
+            gens = check_gens ();
+            quality = check_quality ();
         }
 
         void mutation_strong () {
@@ -111,7 +111,7 @@ class Genetic_Algorithm {
             return divisor;
         }
 
-        Individe selection () {
+        Individe selection_tournament () {
             int x = rand() % population_size;
             int y = rand() % population_size;
             if (population[x].quality >= population[y].quality) {
@@ -121,11 +121,11 @@ class Genetic_Algorithm {
             }
         }
 
-        Individe crossover () {
+        Individe crossover_one_point () {
             Individe parent_1;
             Individe parent_2;
-            parent_1 = selection ();
-            parent_2 = selection ();
+            parent_1 = selection_tournament ();
+            parent_2 = selection_tournament ();
             Individe child = parent_1;
             int divisor = rand_divisor ();
             for (int i = divisor; i < individe_size; i++) {
@@ -138,12 +138,12 @@ class Genetic_Algorithm {
             std::vector <Individe> temp_population;
             for (int i = 0; i < population_size; i++) {
                 Individe temp_individe (individe_size);
-                temp_individe = crossover();
-                temp_individe.mutation_medium();
-                temp_population.push_back(temp_individe);
+                temp_individe = crossover_one_point ();
+                temp_individe.mutation_medium ();
+                temp_population.push_back (temp_individe);
             }
             population = temp_population;
-            fitness = check_fitness();
+            fitness = check_fitness ();
         }
 
         void show_generation () {
@@ -157,8 +157,8 @@ class Genetic_Algorithm {
 
         void run (int quantity_of_generations) {
             for (int i = 0; i < quantity_of_generations; i++) {
-                show_generation();
-                evolution();
+                show_generation ();
+                evolution ();
             }
         }
 };
@@ -174,7 +174,7 @@ struct Point {
 };
 
 int binary_to_decimal (std::string gens) {
-    return std::stoi(gens, 0, 2);
+    return std::stoi (gens, 0, 2);
 }
 
 double make_float (int point, double a, double b, int n) { // n - size of one point
@@ -241,8 +241,8 @@ int main() {
 
     //code
 
-    Genetic_Algorithm temp(10, 10, 9);
-    temp.run(1000);
+    Genetic_Algorithm temp (10, 10, 9);
+    temp.run (1000);
 
     return 0-0;
 }
