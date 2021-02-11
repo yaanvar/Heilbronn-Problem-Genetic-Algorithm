@@ -67,30 +67,36 @@ class Genetic_Algorithm {
         std::vector <Individe> population;
         int population_size;
         int individe_size;
+        int fitness;
+        int individe_min_quality;
 
-        int check_quality () = 0;
+        virtual int check_quality (Individe temp) = 0;
 
-        int check_fitness () = 0;
+        virtual int check_fitness () = 0;
 
-        Genetic_Algorithm (int quantity_of_population, int size_of_individual, int min_quality) {
+        virtual void show_generation () = 0;
+
+        virtual void run (int quantity_of_generations) = 0;
+
+        /*Genetic_Algorithm (int quantity_of_population, int size_of_individual, int min_quality) {
             for (int i = 0; i < quantity_of_population; i++) {
                 population.push_back (Individe (size_of_individual));
             }
             population_size = quantity_of_population;
             individe_size = size_of_individual ;
-            //individe_min_quality = min_quality;
-            //fitness = check_fitness ();
-        }
+            individe_min_quality = min_quality;
+            fitness = check_fitness ();
+        }*/
 
         int rand_divisor () {
             int divisor = rand() % individe_size;
             return divisor;
         }
 
-        Individe selection_tournament () { //TODO (quality)
+        Individe selection_tournament () {
             int x = rand() % population_size;
             int y = rand() % population_size;
-            if (population[x].quality >= population[y].quality) {
+            if (check_quality(population[x]) >= check_quality(population[y])) {
                 return population[x];
             } else {
                 return population[y];
@@ -102,12 +108,30 @@ class Genetic_Algorithm {
             Individe parent_2;
             parent_1 = selection_tournament ();
             parent_2 = selection_tournament ();
-            Individe child = parent_1;
             int divisor = rand_divisor ();
+            Individe child = parent_1;
             for (int i = divisor; i < individe_size; i++) {
                 child.individual[i] = parent_2.individual[i];
             }
             return child;
+        }
+
+        Individe crossover_double_point () {
+            Individe parent_1;
+            Individe parent_2;
+            Individe parent_3;
+            parent_1 = selection_tournament ();
+            parent_2 = selection_tournament ();
+            parent_3 = selection_tournament ();
+            int divisor = rand_divisor ();
+            int divisor_2 = rand_divisor ();
+            Individe child = parent_1;
+            for (int i = std::min(divisor, divisor_2); i < std::max(divisor, divisor_2); i++) {
+                child.individual[i] = parent_2.individual[i];
+            }
+            for (int i = std::max(divisor, divisor_2); i < individe_size; i++) {
+                child.individual[i] = parent_3.individual[i];
+            }
         }
 
         void evolution () {
@@ -115,51 +139,41 @@ class Genetic_Algorithm {
             for (int i = 0; i < population_size; i++) {
                 Individe temp_individe (individe_size);
                 temp_individe = crossover_one_point ();
-                temp_individe.mutation_medium ();
+                temp_individe.mutation_medium (); //mutation
                 temp_population.push_back (temp_individe);
             }
             population = temp_population;
-            fitness = check_fitness (); //TODO 
-        }
-
-        void show_generation () { //TODO
-            std::cout << "\n\n" << "Generation:" << " quantity of population = " << population_size
-                    << " size of individe = " << population_size << "\n\n";
-            for (int i = 0; i < population_size; i++) {
-                std::cout << population[i].gens << "\n";
-            }
-            std::cout << "\n\n" << "fitted = " << fitness;
-        }
-
-        void run (int quantity_of_generations) {
-            for (int i = 0; i < quantity_of_generations; i++) {
-                show_generation ();
-                evolution ();
-            }
+            fitness = check_fitness (); //TODO
         }
 };
 
 class Ideal_Binary_Line: public Genetic_Algorithm {
     public:
-        int fitness;
-        int individe_quality;
-        int individe_min_quality;
 
-        int check_quality () {
+        Ideal_Binary_Line (int quantity_of_population, int size_of_individual, int min_quality) {
+            for (int i = 0; i < quantity_of_population; i++) {
+                population.push_back (Individe (size_of_individual));
+            }
+            population_size = quantity_of_population;
+            individe_size = size_of_individual ;
+            individe_min_quality = min_quality;
+            fitness = check_fitness ();
+        }
+
+        int check_quality (Individe temp) {
             int temp_quality = 0;
-            for (size_t i = 0; i < individual.size(); i++) {
-                if (individual[i]) {
+            for (size_t i = 0; i < temp.individual.size(); i++) {
+                if (temp.individual[i]) {
                     temp_quality++;
                 }
             }
-            quality = temp_quality;
-            return quality;
+            return temp_quality;
         }
 
         int check_fitness () {
             int temp_fitness = 0;
             for (int i = 0; i < population_size; i++) {
-                if (population[i].quality >= individe_min_quality) {
+                if (check_quality(population[i]) >= individe_min_quality) {
                     temp_fitness++;
                 }
             }
@@ -167,16 +181,31 @@ class Ideal_Binary_Line: public Genetic_Algorithm {
             return fitness;
          }
 
+         void show_generation () { //TODO
+            std::cout << "\n\n" << "Generation:" << " quantity of population = " << population_size
+                    << " size of individe = " << population_size << " fitted = " << fitness << "\n\n";
+            for (int i = 0; i < population_size; i++) {
+                std::cout << population[i].gens << "\n";
+            }
+        }
+
+         void run (int quantity_of_generations) {
+            for (int i = 0; i < quantity_of_generations; i++) {
+                show_generation ();
+                evolution ();
+            }
+        }
 };
 
-struct Point {
-    double x;
-    double y;
-    //TODO: double z
-    Point (double temp_x, double temp_y) {
-        x = temp_x;
-        y = temp_y;
-    }
+class Point {
+    public:
+        double x;
+        double y;
+        //TODO: double z
+        Point (double temp_x, double temp_y) {
+            x = temp_x;
+            y = temp_y;
+        }
 };
 
 class Heilbronn_Problem: public Genetic_Algorithm {
@@ -253,7 +282,7 @@ int main() {
 
     //code
 
-    Genetic_Algorithm temp (10, 10, 9);
+    Ideal_Binary_Line temp (10, 10, 9);
     temp.run (1000);
 
     return 0-0;
