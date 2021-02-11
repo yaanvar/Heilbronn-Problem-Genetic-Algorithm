@@ -78,16 +78,6 @@ class Genetic_Algorithm {
 
         virtual void run (int quantity_of_generations) = 0;
 
-        /*Genetic_Algorithm (int quantity_of_population, int size_of_individual, int min_quality) {
-            for (int i = 0; i < quantity_of_population; i++) {
-                population.push_back (Individe (size_of_individual));
-            }
-            population_size = quantity_of_population;
-            individe_size = size_of_individual ;
-            individe_min_quality = min_quality;
-            fitness = check_fitness ();
-        }*/
-
         int rand_divisor () {
             int divisor = rand() % individe_size;
             return divisor;
