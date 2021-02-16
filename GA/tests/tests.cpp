@@ -7,129 +7,143 @@
 
 class Individe {
     public:
-        std::vector <bool> individual;
-        int quality;
-        std::string gens;
-
-        int check_quality () {
-            int temp_quality = 0;
-            for (size_t i = 0; i < individual.size(); i++) {
-                if (individual[i]) {
-                    temp_quality++;
-                }
-            }
-            quality = temp_quality;
-            return quality;
-        }
+        std::vector <bool> gens;
+        std::string str_gens;
 
         std::string check_gens () {
             std::string temp_gens = "";
-            for (size_t i = 0; i < individual.size(); i++) {
-                if (individual[i]) {
+            for (size_t i = 0; i < gens.size(); i++) {
+                if (gens[i]) {
                     temp_gens += '1';
                 } else {
                     temp_gens += '0';
                 }
             }
-            gens = temp_gens;
-            return gens;
+            str_gens = temp_gens;
+            return str_gens;
         }
 
-        Individe (int size_of_individual) {
-            for (size_t i = 0; i < size_of_individual; i++) {
+        Individe (int individe_size) {
+            for (size_t i = 0; i < individe_size; i++) {
                 if (rand() % 2) {
-                    individual.push_back(true);
+                    gens.push_back (true);
                 } else {
-                    individual.push_back(false);
+                    gens.push_back (false);
                 }
             }
-            gens = check_gens();
-            quality = check_quality();
+            str_gens = check_gens ();
         }
 
         Individe () {
         }
 
         void mutation_optional (double mutation_percent) { //TODO engine?
-            for (size_t i = 0; i < individual.size(); i++) {
+            for (size_t i = 0; i < gens.size(); i++) {
                 if (rand() % 100 < mutation_percent) {
-                    individual[i] = !individual[i];
+                    gens[i] = !gens[i];
                 }
             }
-            gens = check_gens();
-            quality = check_quality();
+            str_gens = check_gens ();
         }
 
         void mutation_strong () {
-            double mutation_percent = (3. / individual.size()) * 100;
+            double mutation_percent = (3. / gens.size()) * 100;
             mutation_optional (mutation_percent);
         }
 
         void mutation_medium () {
-            double mutation_percent = (1. / individual.size()) * 100;
+            double mutation_percent = (1. / gens.size()) * 100;
             mutation_optional (mutation_percent);
         }
 
         void mutation_weak () {
-            double mutation_percent = (1. / (3. * individual.size())) * 100;
+            double mutation_percent = (1. / (3. * gens.size())) * 100;
             mutation_optional (mutation_percent);
+        }
+};
+
+class Point {
+    public:
+        double x;
+        double y;
+        //TODO: double z
+        Point (double temp_x, double temp_y) {
+            x = temp_x;
+            y = temp_y;
         }
 };
 
 class Genetic_Algorithm {
     public:
         std::vector <Individe> population;
-        int fitness;
         int population_size;
         int individe_size;
-        int individe_quality;
+        double population_fitness;
 
+        virtual double check_individe_fitness (Individe temp) = 0;
 
-        int check_fitness () {
-            int temp_fitness = 0;
-            for (int i = 0; i < population_size; i++) {
-                if (population[i].quality >= individe_quality) {
-                    temp_fitness++;
-                }
-            }
-            fitness = temp_fitness;
-            return fitness;
-        }
+        virtual double check_population_fitness () = 0;
 
-        Genetic_Algorithm (int quantity_of_population, int size_of_individual, int min_quality) {
-            for (int i = 0; i < quantity_of_population; i++) {
-                population.push_back (Individe (size_of_individual));
-            }
-            population_size = quantity_of_population;
-            individe_size = size_of_individual ;
-            individe_quality = min_quality;
-            fitness = check_fitness ();
-        }
+        virtual void show_generation () = 0;
+
+        virtual void run (int population_size) = 0;
 
         int rand_divisor () {
             int divisor = rand() % individe_size;
             return divisor;
         }
 
-        Individe selection () {
+        Individe selection_tournament () {
             int x = rand() % population_size;
             int y = rand() % population_size;
-            if (population[x].quality >= population[y].quality) {
+            if (check_individe_fitness (population[x]) >= check_individe_fitness (population[y])) { ///////////
                 return population[x];
             } else {
                 return population[y];
             }
         }
 
-        Individe crossover () {
+        Individe crossover_one_point () {
             Individe parent_1;
             Individe parent_2;
-            parent_1 = selection ();
-            parent_2 = selection ();
-            Individe child = parent_1;
+            parent_1 = selection_tournament ();
+            parent_2 = selection_tournament ();
             int divisor = rand_divisor ();
+            Individe child = parent_1;
             for (int i = divisor; i < individe_size; i++) {
-                child.individual[i] = parent_2.individual[i];
+                child.gens[i] = parent_2.gens[i];
+            }
+            return child;
+        }
+
+        Individe crossover_double_point () {
+            Individe parent_1;
+            Individe parent_2;
+            Individe parent_3;
+            parent_1 = selection_tournament ();
+            parent_2 = selection_tournament ();
+            parent_3 = selection_tournament ();
+            int divisor = rand_divisor ();
+            int divisor_2 = rand_divisor ();
+            Individe child = parent_1;
+            for (int i = std::min(divisor, divisor_2); i < std::max(divisor, divisor_2); i++) {
+                child.gens[i] = parent_2.gens[i];
+            }
+            for (int i = std::max(divisor, divisor_2); i < individe_size; i++) {
+                child.gens[i] = parent_3.gens[i];
+            }
+            return child;
+        }
+
+        Individe crossover_simmetry () {
+            Individe parent_1;
+            Individe parent_2;
+            parent_1 = selection_tournament ();
+            parent_2 = selection_tournament ();
+            int divisor = individe_size / 2;
+            Individe child = parent_1;
+            for (int i = divisor; i < individe_size; i++) {
+                child.gens[i] = parent_2.gens[i];
             }
             return child;
         }
@@ -138,48 +152,126 @@ class Genetic_Algorithm {
             std::vector <Individe> temp_population;
             for (int i = 0; i < population_size; i++) {
                 Individe temp_individe (individe_size);
-                temp_individe = crossover();
-                temp_individe.mutation_medium();
-                temp_population.push_back(temp_individe);
+                temp_individe = crossover_one_point ();
+                temp_individe.mutation_medium (); //mutation
+                temp_population.push_back (temp_individe);
             }
             population = temp_population;
-            fitness = check_fitness();
+            population_fitness = check_population_fitness (); //TODO
+        }
+};
+
+class Heilbronn_Problem: public Genetic_Algorithm {
+    public:
+
+        Heilbronn_Problem (int temp_population_size, int temp_individe_size) {
+                for (int i = 0; i < temp_population_size; i++) {
+                    population.push_back (Individe (temp_individe_size));
+                }
+                population_size = temp_population_size;
+                individe_size = temp_individe_size ;
+                population_fitness = check_population_fitness ();
         }
 
-        void show_generation () {
-            std::cout << "\n\n" << "Generation:" << " quantity of population = " << population_size
-                    << " size of individe = " << population_size << "\n\n";
+        double check_individe_fitness (Individe temp) {
+            double temp_individe_fitness = f_triangle_area (temp, 4);
+            return temp_individe_fitness;
+        }
+
+        double check_population_fitness () {
+                double temp_population_fitness = 0.;
+                for (int i = 0; i < population_size; i++) {
+                    temp_population_fitness += check_individe_fitness (population[i]);
+                }
+                population_fitness = temp_population_fitness / population_size;
+                return population_fitness;
+        }
+
+        void show_generation () { //TODO
+            std::cout << "\n\n" << "Generation:" << " size of population = " << population_size
+                    << " size of individe = " << individe_size << " population fitness = " << population_fitness << "\n\n";
             for (int i = 0; i < population_size; i++) {
-                std::cout << population[i].gens << "\n";
+                std::cout << population[i].str_gens << "\t" << check_individe_fitness (population[i]) << "\n";
             }
-            std::cout << "\n\n" << "fitted = " << fitness;
         }
 
-        void run (int quantity_of_generations) {
-            for (int i = 0; i < quantity_of_generations; i++) {
-                show_generation();
-                evolution();
+        void run (int generation_size) {
+            for (int i = 0; i < generation_size; i++) {
+                show_generation ();
+                evolution ();
             }
         }
+
+        //code
+
+        int binary_to_decimal (std::string str_gens) {
+            return std::stoi (str_gens, 0, 2);
+        }
+
+        double make_float (int point, double a, double b, int size_of_point) { // n - size of one point
+            double h = (b - a) / (pow (2, size_of_point) - 1.);
+            double result = a + point * h;
+            return result;
+        }
+
+        std::vector <Point> transform (Individe temp, double a, double b, int quantity_of_points) {
+            std::vector <Point> result;
+            int size_of_point = temp.str_gens.size () / quantity_of_points;
+            for (int i = 0; i < temp.gens.size(); i += size_of_point) {
+                int x1, y1;
+                std::string s = temp.str_gens.substr (i, size_of_point);
+                std::string sx = s.substr (0, size_of_point / 2);
+                std::string sy = s.substr (size_of_point / 2, size_of_point / 2);
+                x1 = binary_to_decimal (sx);
+                y1 = binary_to_decimal (sy);
+                double x = make_float (x1, a, b, size_of_point / 2);
+                double y = make_float (y1, a, b, size_of_point / 2);
+                Point t (x, y);
+                result.push_back (t);
+            }
+            return result;
+        }
+
+        double triangle_area (Point first, Point second, Point third) {
+            double AB, BC, AC, ab, bc, ac, p, S;
+            AB = ((first.x - second.x) * (first.x - second.x) + (first.y - second.y) * (first.y - second.y));
+            ab = sqrt(AB);
+            BC = ((second.x - third.x) * (second.x - third.x) + (second.y - third.y) * (second.y - third.y));
+            bc = sqrt(BC);
+            AC = ((first.x - third.x) * (first.x - third.x) + (first.y - third.y) * (first.y - third.y));
+            ac = sqrt(AC);
+            p = (ab + ac + bc) / 2;
+            S = sqrt((p - ab) * (p - ac) * (p - bc) * p);
+            return S;
+        }
+
+        double f_triangle_area (Individe temp, int quantity_of_points) { //TODO: площадь n треугольников
+            std::vector <Point> points = transform (temp, 0., 1., quantity_of_points);
+            double min_s = 1.;
+            double s = 0;
+            for (int i = 0; i < points.size(); i++) {
+                for (int j = 0; j < points.size(); j++) {
+                    for (int z = 0; z < points.size(); z++) {
+                        if (i != j || i != z || j != z) {
+                            s = triangle_area(points[i], points[j], points[z]);
+                            if (s < min_s) {
+                                min_s = s;
+                            }
+                        }
+                    }
+                }
+            }
+            return min_s;
+        }
+
 };
 
 int main () {
 
     srand(time(NULL));
 
-    //code
-
-    /*Individe temp (10);
-    std::cout << temp.gens << std::endl;
-    std::cout << temp.quality << std::endl;
-    temp.mutation_optional(100);
-    std::cout << temp.gens << std::endl;
-    std::cout << temp.quality << std::endl;*/
-
-    Genetic_Algorithm temp (10, 10, 5);
-    temp.show_generation();
-    std::cout << std::endl << temp.rand_divisor();
-    //temp.show_generation();
+    Heilbronn_Problem temp (10, 100);
+    temp.run (100);
 
 
     return 0-0;

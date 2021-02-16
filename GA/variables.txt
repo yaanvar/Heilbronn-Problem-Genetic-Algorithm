@@ -1,0 +1,28 @@
+temp_... - временные переменные
+
+point:
+	double:
+		x, y, z - координаты
+class:
+	Individe - класс индивида:
+		vector <bool> gens - гены в массиве
+		string str_gens - гены в строке
+		
+		void mutation... - методы мутации
+		double mutation_percent - процент мутации
+		
+		individe_size - размер индивида
+		
+	Genetic_Algorithm - генетический алгоритм:
+		vector <Individe> population - популяция
+        double individe_fitness - качество индивида
+		double population_fitness - среднее качество популяции
+		int individe_min_quality;////////
+		
+		
+		
+		int population_size - размер популяции 
+        int individe_size - размер индивида
+		
+		
+	
