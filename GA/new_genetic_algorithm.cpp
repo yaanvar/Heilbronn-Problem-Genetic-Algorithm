@@ -210,19 +210,36 @@ class Ideal_Binary_Line: public Genetic_Algorithm {
 
 class Heilbronn_Problem: public Genetic_Algorithm {
     public:
+        int quantity_of_points;
 
-        Heilbronn_Problem (int temp_population_size, int temp_individe_size) {
-                for (int i = 0; i < temp_population_size; i++) {
-                    population.push_back (Individe (temp_individe_size));
-                }
-                population_size = temp_population_size;
-                individe_size = temp_individe_size ;
-                population_fitness = check_population_fitness ();
+        Heilbronn_Problem (int temp_population_size, int temp_quantity_of_points) {
+            int temp_individe_size = 2 * pow(2, 10) * temp_quantity_of_points;
+            for (int i = 0; i < temp_population_size; i++) {
+                population.push_back (Individe (temp_individe_size));
+            }
+            population_size = temp_population_size;
+            individe_size = temp_individe_size;
+            quantity_of_points = temp_quantity_of_points;
+            population_fitness = check_population_fitness ();
         }
 
         double check_individe_fitness (Individe temp) {
-            double temp_individe_fitness = f_triangle_area (temp, 4);
-            return temp_individe_fitness;
+            std::vector <Point> points = transform (temp, 0., 1.);
+            double min_s = 1.;
+            double s = 0;
+            for (int i = 0; i < points.size(); i++) {
+                for (int j = 0; j < points.size(); j++) {
+                    for (int z = 0; z < points.size(); z++) {
+                        if (i != j && i != z && j != z) {
+                            s = triangle_area(points[i], points[j], points[z]);
+                            if (s < min_s) {
+                                min_s = s;
+                            }
+                        }
+                    }
+                }
+            }
+            return min_s;
         }
 
         double check_population_fitness () {
@@ -251,21 +268,22 @@ class Heilbronn_Problem: public Genetic_Algorithm {
 
         //code
 
-        int binary_to_decimal (std::string str_gens) {
-            return std::stoi (str_gens, 0, 2);
+        long long binary_to_decimal (std::string str_gens) {
+            std::cout << std::stoll(str_gens, 0, 2);
+            return std::stoll(str_gens, 0, 2);
         }
 
-        double make_float (int point, double a, double b, int size_of_point) { // n - size of one point
+        double make_float (long long point, double a, double b, int size_of_point) { // n - size of one point
             double h = (b - a) / (pow (2, size_of_point) - 1.);
             double result = a + point * h;
             return result;
         }
 
-        std::vector <Point> transform (Individe temp, double a, double b, int quantity_of_points) {
+        std::vector <Point> transform (Individe temp, double a, double b) {
             std::vector <Point> result;
-            int size_of_point = temp.str_gens.size () / quantity_of_points;
+            int size_of_point = temp.str_gens.size() / quantity_of_points;
             for (int i = 0; i < temp.gens.size(); i += size_of_point) {
-                int x1, y1;
+                long long x1, y1;
                 std::string s = temp.str_gens.substr (i, size_of_point);
                 std::string sx = s.substr (0, size_of_point / 2);
                 std::string sy = s.substr (size_of_point / 2, size_of_point / 2);
@@ -292,25 +310,6 @@ class Heilbronn_Problem: public Genetic_Algorithm {
             return S;
         }
 
-        double f_triangle_area (Individe temp, int quantity_of_points) { //TODO: площадь n треугольников
-            std::vector <Point> points = transform (temp, 0., 1., quantity_of_points);
-            double min_s = 1.;
-            double s = 0;
-            for (int i = 0; i < points.size(); i++) {
-                for (int j = 0; j < points.size(); j++) {
-                    for (int z = 0; z < points.size(); z++) {
-                        if (i != j || i != z || j != z) {
-                            s = triangle_area(points[i], points[j], points[z]);
-                            if (s < min_s) {
-                                min_s = s;
-                            }
-                        }
-                    }
-                }
-            }
-            return min_s;
-        }
-
 };
 
 
@@ -323,8 +322,8 @@ int main() {
     //code
 
     //Ideal_Binary_Line temp (100, 100);
-    Heilbronn_Problem temp (100, 100);
-    temp.run (1000);
+    Heilbronn_Problem temp (100, 4);
+    temp.run (10);
 
     return 0-0;
 }
