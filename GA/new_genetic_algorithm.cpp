@@ -153,67 +153,21 @@ class Genetic_Algorithm {
             for (int i = 0; i < population_size; i++) {
                 Individe temp_individe (individe_size);
                 temp_individe = crossover_one_point ();
-                temp_individe.mutation_medium (); //mutation
+                temp_individe.mutation_strong (); //mutation
                 temp_population.push_back (temp_individe);
             }
             population = temp_population;
-            population_fitness = check_population_fitness (); //TODO
-        }
-};
-
-class Ideal_Binary_Line: public Genetic_Algorithm {
-    public:
-
-        Ideal_Binary_Line (int temp_population_size, int temp_individe_size) {
-            for (int i = 0; i < temp_population_size; i++) {
-                population.push_back (Individe (temp_individe_size));
-            }
-            population_size = temp_population_size;
-            individe_size = temp_individe_size ;
             population_fitness = check_population_fitness ();
-        }
-
-        double check_individe_fitness (Individe temp) {
-            double temp_individe_fitness = 0;
-            for (size_t i = 0; i < individe_size; i++) {
-                if (temp.gens[i]) {
-                    temp_individe_fitness++;
-                }
-            }
-            return temp_individe_fitness;
-        }
-
-        double check_population_fitness () {
-            int temp_population_fitness = 0;
-            for (int i = 0; i < population_size; i++) {
-                temp_population_fitness += check_individe_fitness (population[i]);
-            }
-            population_fitness = temp_population_fitness / population_size;
-            return population_fitness;
-         }
-
-         void show_generation () { //TODO
-            std::cout << "\n\n" << "Generation:" << " size of population = " << population_size
-                    << " size of individe = " << individe_size << " population fitness = " << population_fitness << "\n\n";
-            for (int i = 0; i < population_size; i++) {
-                std::cout << population[i].str_gens << "\t" << check_individe_fitness (population[i]) << "\n";
-            }
-        }
-
-         void run (int generation_size) {
-            for (int i = 0; i < generation_size; i++) {
-                show_generation ();
-                evolution ();
-            }
         }
 };
 
 class Heilbronn_Problem: public Genetic_Algorithm {
     public:
         int quantity_of_points;
+        Heilbronn_Problem () {}
 
         Heilbronn_Problem (int temp_population_size, int temp_quantity_of_points) {
-            int temp_individe_size = 2 * pow(2, 10) * temp_quantity_of_points;
+            int temp_individe_size = 2 * 16 * temp_quantity_of_points;
             for (int i = 0; i < temp_population_size; i++) {
                 population.push_back (Individe (temp_individe_size));
             }
@@ -259,18 +213,45 @@ class Heilbronn_Problem: public Genetic_Algorithm {
             }
         }
 
+        void show_points () {
+            std::cout << "\n\n" << "Generation:" << " size of population = " << population_size
+                    << " size of individe = " << individe_size << " population fitness = " << population_fitness /*<< "\n\n"*/;
+            std::cout << " best individe = " << check_individe_fitness(best_individe()) << "\n\n";
+            std::vector <Point> x = transform (best_individe (), 0., 1.);
+            std::cout << "x:\n";
+            for (int i = 0; i < quantity_of_points; i++) {
+                std::cout << x[i].x << "\n";
+            }
+            std::cout << "y:\n";
+            for (int i = 0; i < quantity_of_points; i++) {
+                std::cout << x[i].y << "\n";
+            }
+        }
+
+        Individe best_individe () {
+            double max_fitness = 0;
+            double cnt = 0;
+            for (int i = 0; i < population.size(); i++) {
+                if (check_individe_fitness(population[i]) > max_fitness) {
+                    max_fitness = check_individe_fitness(population[i]);
+                    cnt = i;
+                }
+            }
+            return population[cnt];
+        }
+
         void run (int generation_size) {
             for (int i = 0; i < generation_size; i++) {
-                show_generation ();
+                //show_generation ();
+                //show_points ();
                 evolution ();
             }
         }
 
         //code
 
-        long long binary_to_decimal (std::string str_gens) {
-            std::cout << std::stoll(str_gens, 0, 2);
-            return std::stoll(str_gens, 0, 2);
+        int binary_to_decimal (std::string str_gens) {
+            return std::stoi(str_gens, 0, 2);
         }
 
         double make_float (long long point, double a, double b, int size_of_point) { // n - size of one point
@@ -283,7 +264,7 @@ class Heilbronn_Problem: public Genetic_Algorithm {
             std::vector <Point> result;
             int size_of_point = temp.str_gens.size() / quantity_of_points;
             for (int i = 0; i < temp.gens.size(); i += size_of_point) {
-                long long x1, y1;
+                int x1, y1;
                 std::string s = temp.str_gens.substr (i, size_of_point);
                 std::string sx = s.substr (0, size_of_point / 2);
                 std::string sy = s.substr (size_of_point / 2, size_of_point / 2);
@@ -312,6 +293,37 @@ class Heilbronn_Problem: public Genetic_Algorithm {
 
 };
 
+class Monte_Carlo: public Heilbronn_Problem {
+    public:
+
+        Monte_Carlo (int temp_population_size, int temp_quantity_of_points) {
+            int temp_individe_size = 2 * 16 * temp_quantity_of_points;
+            for (int i = 0; i < temp_population_size; i++) {
+                population.push_back (Individe (temp_individe_size));
+            }
+            population_size = temp_population_size;
+            individe_size = temp_individe_size;
+            quantity_of_points = temp_quantity_of_points;
+        }
+
+        void change () {
+            population.clear();
+            for (int i = 0; i < population_size; i++) {
+                population.push_back (Individe (individe_size));
+            }
+        }
+
+        double run_mc (int generation_size) {
+            double best = 1.;
+            for (int i = 0; i < generation_size; i++) {
+                change();
+                best = check_individe_fitness(best_individe ());
+            }
+            return best;
+        }
+
+};
+
 
 
 
@@ -321,9 +333,18 @@ int main() {
 
     //code
 
-    //Ideal_Binary_Line temp (100, 100);
-    Heilbronn_Problem temp (100, 4);
-    temp.run (10);
-
+    Heilbronn_Problem temp (100, 5);
+    double result = 0;
+    for (int i = 0; i < 1; i++) {
+        temp.run(100);
+        result += temp.check_individe_fitness(temp.best_individe ());
+    }
+    std::cout << "Heilbronn problem = " << result / 1;
+    result = 0;
+    /*for (int i = 0; i < 1000; i++) {
+        Monte_Carlo temp (100, 5);
+        result += temp.run_mc (100);
+    }
+    std::cout << "Monte_Carlo = " << result;*/
     return 0-0;
 }
