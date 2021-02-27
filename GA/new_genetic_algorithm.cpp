@@ -78,11 +78,8 @@ class Genetic_Algorithm {
         std::vector <Individe> population;
         int population_size;
         int individe_size;
-        double population_fitness;
 
         virtual double check_individe_fitness (Individe temp) = 0;
-
-        virtual double check_population_fitness () = 0;
 
         virtual void show_generation () = 0;
 
@@ -157,7 +154,6 @@ class Genetic_Algorithm {
                 temp_population.push_back (temp_individe);
             }
             population = temp_population;
-            population_fitness = check_population_fitness ();
         }
 };
 
@@ -174,7 +170,6 @@ class Heilbronn_Problem: public Genetic_Algorithm {
             population_size = temp_population_size;
             individe_size = temp_individe_size;
             quantity_of_points = temp_quantity_of_points;
-            population_fitness = check_population_fitness ();
         }
 
         double check_individe_fitness (Individe temp) {
@@ -196,18 +191,10 @@ class Heilbronn_Problem: public Genetic_Algorithm {
             return min_s;
         }
 
-        double check_population_fitness () {
-                double temp_population_fitness = 0.;
-                for (int i = 0; i < population_size; i++) {
-                    temp_population_fitness += check_individe_fitness (population[i]);
-                }
-                population_fitness = temp_population_fitness / population_size;
-                return population_fitness;
-        }
 
         void show_generation () { //TODO
             std::cout << "\n\n" << "Generation:" << " size of population = " << population_size
-                    << " size of individe = " << individe_size << " population fitness = " << population_fitness << "\n\n";
+                    << " size of individe = " << individe_size << "\n\n";
             for (int i = 0; i < population_size; i++) {
                 std::cout << population[i].str_gens << "\t" << check_individe_fitness (population[i]) << "\n";
             }
@@ -215,7 +202,7 @@ class Heilbronn_Problem: public Genetic_Algorithm {
 
         void show_points () {
             std::cout << "\n\n" << "Generation:" << " size of population = " << population_size
-                    << " size of individe = " << individe_size << " population fitness = " << population_fitness /*<< "\n\n"*/;
+                    << " size of individe = " << individe_size /*<< "\n\n"*/;
             std::cout << " best individe = " << check_individe_fitness(best_individe()) << "\n\n";
             std::vector <Point> x = transform (best_individe (), 0., 1.);
             std::cout << "x:\n";
@@ -333,7 +320,7 @@ int main() {
 
     //code
 
-    Heilbronn_Problem temp (100, 5);
+    Heilbronn_Problem temp (1000, 5);
     double result = 0;
     for (int i = 0; i < 1; i++) {
         temp.run(100);
