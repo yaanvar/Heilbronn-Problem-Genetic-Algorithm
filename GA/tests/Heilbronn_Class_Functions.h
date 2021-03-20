@@ -1,0 +1,6 @@
+#ifndef HEILBRONN_CLASS_FUNCTIONS_H
+#define HEILBRONN_CLASS_FUNCTIONS_H
+
+
+
+#endif
