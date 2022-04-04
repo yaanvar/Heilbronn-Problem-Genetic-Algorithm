@@ -92,8 +92,8 @@ int main () {
     for (int i = 0; i < n; i++) {
         Heilbronn_Problem f (1000, 6, 16);
         f.run (1000);
-        av += f.check_fitness (f.best_individe ());
-        show_points (f.best_individe ());
+        av += f.check_fitness (f.best_individe());
+        show_points (f.best_individe());
     }
     std::cout << av/n;
     return 0-0;
