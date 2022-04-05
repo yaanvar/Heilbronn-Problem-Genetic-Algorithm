@@ -26,7 +26,7 @@
 		E47D08E127F4CE7600951F41 /* NeoGeneticAlgorithm */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NeoGeneticAlgorithm; sourceTree = BUILT_PRODUCTS_DIR; };
 		E47D08E427F4CE7600951F41 /* Genetic_Algorithm.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Genetic_Algorithm.cpp; sourceTree = "<group>"; };
 		E4AF083D27F7AD1F00DF0EC5 /* Heilbronn_Problem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Heilbronn_Problem.h; sourceTree = "<group>"; };
-		E4AF083E27F7AD4900DF0EC5 /* Individual.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Individual.h; sourceTree = "<group>"; };
+		E4AF083E27F7AD4900DF0EC5 /* Individe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Individe.h; sourceTree = "<group>"; };
 		E4AF083F27F7AD6000DF0EC5 /* Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
 		E4AF084027F7AD6F00DF0EC5 /* Point.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Point.h; sourceTree = "<group>"; };
 		E4AF084127F7AD8800DF0EC5 /* Selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Selection.h; sourceTree = "<group>"; };
@@ -66,7 +66,7 @@
 			children = (
 				E47D08E427F4CE7600951F41 /* Genetic_Algorithm.cpp */,
 				E4AF083D27F7AD1F00DF0EC5 /* Heilbronn_Problem.h */,
-				E4AF083E27F7AD4900DF0EC5 /* Individual.h */,
+				E4AF083E27F7AD4900DF0EC5 /* Individe.h */,
 				E4AF083F27F7AD6000DF0EC5 /* Random.h */,
 				E4AF084027F7AD6F00DF0EC5 /* Point.h */,
 				E4AF084127F7AD8800DF0EC5 /* Selection.h */,

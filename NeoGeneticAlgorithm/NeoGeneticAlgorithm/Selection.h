@@ -11,12 +11,12 @@
 #include <algorithm>
 #include <cmath>
 
-#include "Individual.h"
+#include "Individe.h"
 
-Individual selection_tournament (std::vector <Individual> &population_temp, std::vector <long double> &population_quality_temp) {
-    int sz = population_temp.size();
-    int x = random_int (0, sz - 1);
-    int y = random_int (0, sz - 1);
+Individe selection_tournament(std::vector <Individe> &population_temp, std::vector <long double> &population_quality_temp) {
+    size_t sz = population_temp.size();
+    int x = random_int(0, sz - 1);
+    int y = random_int(0, sz - 1);
     if (population_quality_temp[x] >= population_quality_temp[y]) {
         return population_temp[x];
     } else {
@@ -24,16 +24,16 @@ Individual selection_tournament (std::vector <Individual> &population_temp, std:
     }
 }
 
-Individual selection_roulette_wheel (std::vector <Individual> &population_temp, std::vector <long double> &population_quality_temp) {
+Individe selection_roulette_wheel(std::vector <Individe> &population_temp, std::vector <long double> &population_quality_temp) {
     long double sum = 0;
-    int sz = population_temp.size();
+    unsigned long sz = population_temp.size();
     for (int i = 0; i < sz; i++) {
         sum += population_quality_temp[i];
     }
-    long double part_sum = random_double (0, sum);
+    long double part_sum = random_double(0, sum);
     int chosen;
     for (chosen = 0; part_sum < sum; chosen++) {
-        part_sum += population_quality_temp [chosen];
+        part_sum += population_quality_temp[chosen];
     }
     if (chosen == 0) {
         chosen = 1;
@@ -41,9 +41,9 @@ Individual selection_roulette_wheel (std::vector <Individual> &population_temp, 
     return population_temp[chosen - 1];
 }
 
-Individual selection_rank (std::vector <Individual> &population_temp, std::vector <long double> &population_quality_temp) {
-    int sz = population_temp.size();
-    std::vector <long double> ranks (sz, 0);
+Individe selection_rank(std::vector <Individe> &population_temp, std::vector <long double> &population_quality_temp) {
+    size_t sz = population_temp.size();
+    std::vector <long double> ranks(sz, 0);
     std::vector<std::pair<long double, int> > zip;
     for (int i = 0; i < sz; i++) {
         zip.push_back(std::make_pair(population_quality_temp[i], i));
@@ -53,7 +53,7 @@ Individual selection_rank (std::vector <Individual> &population_temp, std::vecto
             return a.first < b.first;
         });
     for (int i = 0; i < zip.size(); i++) {
-        ranks [zip[i].second] = i + 1;
+        ranks[zip[i].second] = i + 1;
     }
 
     long double start = zip[0].first;
@@ -92,10 +92,10 @@ Individual selection_rank (std::vector <Individual> &population_temp, std::vecto
     for (int i = 0; i < sz; i++) {
         summ += ranks[i];
     }
-    int part_sum = random_int (0, summ);
+    int part_sum = random_int(0, summ);
     int chosen;
     for (chosen = 0; part_sum < summ; chosen++) {
-        part_sum += ranks [chosen];
+        part_sum += ranks[chosen];
     }
     if (chosen == 0) {
         chosen = 1;
@@ -103,8 +103,8 @@ Individual selection_rank (std::vector <Individual> &population_temp, std::vecto
     return population_temp[chosen - 1];
 }
 
-Individual selection_random  (std::vector <Individual> &population_temp, std::vector <long double> &population_quality_temp) {
-    return population_temp [random_int (0, population_temp.size() - 1)];
+Individe selection_random (std::vector <Individe> &population_temp, std::vector <long double> &population_quality_temp) {
+    return population_temp[random_int(0, population_temp.size() - 1)];
 }
 
 

@@ -19,46 +19,46 @@
 namespace MyNameSpace {
     class Heilbronn_Problem {
         public:
-            std::vector <Individual> population;
+            std::vector <Individe> population;
             std::vector <long double> population_quality;
             int population_size;
             int individual_size;
             int points_quantity;
             long double last_best;
 
-            void evolution (Individual &bi, double &bd);
+            void evolution(Individe &bi, double &bd);
 
-            void symbiosis (Individual &bi, double &bd);
+            void symbiosis(Individe &bi, double &bd);
 
-            void run (int generation_size) {
-                Individual best_i (individual_size);
+            void run(int generation_size) {
+                Individe best_i (individual_size);
                 double best_d = 0.;
                 for (int i = 0; i < generation_size; i++) {
                     evolution (best_i, best_d);
                 }
             }
 
-            void run_symbiosis (int generation_size) {
-                Individual best_i (individual_size);
+            void run_symbiosis(int generation_size) {
+                Individe best_i(individual_size);
                 double best_d = 0.;
                 for (int i = 0; i < generation_size; i++) {
-                    symbiosis (best_i, best_d);
-                    last_best = check_fitness (best_individe ());
+                    symbiosis(best_i, best_d);
+                    last_best = check_fitness (best_individe());
                 }
             }
 
-            Heilbronn_Problem (int temp_population_size, int temp_quantity_of_points, int bits) {
+            Heilbronn_Problem(int temp_population_size, int temp_quantity_of_points, int bits) {
                 population_size = temp_population_size;
                 points_quantity = temp_quantity_of_points;
                 individual_size = 2 * bits * points_quantity;
                 for (int i = 0; i < population_size; i++) {
-                    population.push_back (Individual (individual_size));
-                    population_quality.push_back(check_fitness (population[i]));
+                    population.push_back(Individe(individual_size));
+                    population_quality.push_back(check_fitness(population[i]));
                 }
             }
 
-            long double check_fitness (Individual temp) {
-                std::vector <Point> points = transform (temp, 0., 1., points_quantity);
+            long double check_fitness(Individe temp) {
+                std::vector <Point> points = transform(temp, 0., 1., points_quantity);
                 long double min_s = 1.;
                 long double s = 0;
                 int sz = points.size();
@@ -77,7 +77,7 @@ namespace MyNameSpace {
                 return min_s;
             }
 
-            Individual best_individe () {
+            Individe best_individe() {
                 long double max_fitness = 0;
                 long double cnt = 0;
                 for (int i = 0; i < population_size; i++) {

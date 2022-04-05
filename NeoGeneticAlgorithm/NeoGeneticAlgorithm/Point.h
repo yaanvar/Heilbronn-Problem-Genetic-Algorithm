@@ -13,7 +13,7 @@ class Point {
         long double x;
         long double y;
         //TODO: double z
-        Point (long double temp_x, long double temp_y) {
+        Point(long double temp_x, long double temp_y) {
             x = temp_x;
             y = temp_y;
         }

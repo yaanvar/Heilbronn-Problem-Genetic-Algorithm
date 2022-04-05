@@ -8,23 +8,23 @@
 #ifndef Crossover_h
 #define Crossover_h
 
-#include "Individual.h"
+#include "Individe.h"
 
-Individual crossover_one_point (Individual &parent1, Individual &parent2) {
+Individe crossover_one_point(Individe &parent1, Individe &parent2) {
     int sz = parent1.gens.size();
-    Individual child = parent1;
-    int del = random_int (0, sz);
+    Individe child = parent1;
+    int del = random_int(0, sz);
     for (int i = del; i < sz; i++) {
         child.gens[i] = parent2.gens[i];
     }
     return child;
 }
 
-Individual crossover_two_point (Individual &parent1, Individual &parent2) {
+Individe crossover_two_point(Individe &parent1, Individe &parent2) {
     int sz = parent1.gens.size();
-    Individual child = parent1;
-    int del = random_int (0, sz);
-    int del2 = random_int (del, sz);
+    Individe child = parent1;
+    int del = random_int(0, sz);
+    int del2 = random_int(del, sz);
     for (int i = del; i < del2; i++) {
         child.gens[i] = parent2.gens[i];
     }
@@ -34,9 +34,9 @@ Individual crossover_two_point (Individual &parent1, Individual &parent2) {
     return child;
 }
 
-Individual crossover_symmetric (Individual &parent1, Individual &parent2) {
+Individe crossover_symmetric(Individe &parent1, Individe &parent2) {
     int sz = parent1.gens.size();
-    Individual child = parent1;
+    Individe child = parent1;
     int del = sz / 2;
     for (int i = del; i < sz; i++) {
         child.gens[i] = parent2.gens[i];
@@ -44,7 +44,7 @@ Individual crossover_symmetric (Individual &parent1, Individual &parent2) {
     return child;
 }
 
-Individual crossover_roulette_wheell (Individual &parent1, Individual &parent2, std::vector <Individual> &population_temp, std::vector <long double> &population_qualtity_temp) {
+Individe crossover_roulette_wheel(Individe &parent1, Individe &parent2, std::vector <Individe> &population_temp, std::vector <long double> &population_qualtity_temp) {
     int sz = parent1.gens.size();
     int x = -1, y = -1;
     for (int i = 0; i < population_qualtity_temp.size(); i++) {
@@ -62,10 +62,10 @@ Individual crossover_roulette_wheell (Individual &parent1, Individual &parent2, 
             }
         }
     }
-    Individual child = population_temp[x];
-    int prob = (int)(population_qualtity_temp[y] / (population_qualtity_temp[y] + population_qualtity_temp[x])) * 100;
+    Individe child = population_temp[x];
+    int prob = (int) (population_qualtity_temp[y] / (population_qualtity_temp[y] + population_qualtity_temp[x])) * 100;
     for (int i = 0; i < sz; i++) {
-        if (random_int (0, 100) < prob) {
+        if (random_int(0, 100) < prob) {
             child.gens[i] = population_temp[y].gens[i];
         }
     }
